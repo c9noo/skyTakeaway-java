@@ -104,4 +104,15 @@ public class EmployeeServiceImpl implements EmployeeService {
         return new PageResult(employees.getTotal(),employees.getResult());
     }
 
+    @Override
+    public void startOnStop(Integer status, Long id) {
+        //因为后期可能会修改其他的信息 所以直接封装成一个实体类 在传递给mapper
+        Employee employee = Employee.builder()
+                .status(status)
+                .id(id)
+                .build();
+
+        employeeMapper.update(employee);
+    }
+
 }

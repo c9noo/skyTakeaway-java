@@ -103,4 +103,18 @@ public class EmployeeController {
         return Result.success(pageResult);
     }
 
+    /**
+     * 员工状态修改
+     * @param status
+     * @param id
+     * @return
+     */
+    @PostMapping("/status/{status}")
+    @ApiOperation("员工状态更改")
+    public Result startOnStop(@PathVariable Integer status,Long id){
+        log.info("当前状态{}",status);
+        employeeService.startOnStop(status,id);
+        return Result.success();
+    }
+
 }
