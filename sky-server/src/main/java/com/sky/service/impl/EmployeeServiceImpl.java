@@ -81,10 +81,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         //3. 完善数据
         employee.setStatus(StatusConstant.ENABLE);
         employee.setPassword(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()));
-        employee.setCreateTime(LocalDateTime.now());
-        employee.setUpdateTime(LocalDateTime.now());
-        employee.setCreateUser(BaseContext.getCurrentId());
-        employee.setUpdateUser(BaseContext.getCurrentId());
         //4. 调用持久层
         employeeMapper.insert(employee);
     }
@@ -104,6 +100,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         return new PageResult(employees.getTotal(),employees.getResult());
     }
 
+    /**
+     * 员工状态修改
+     * @param status
+     * @param id
+     */
     @Override
     public void startOnStop(Integer status, Long id) {
         //因为后期可能会修改其他的信息 所以直接封装成一个实体类 在传递给mapper
@@ -115,6 +116,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeMapper.update(employee);
     }
 
+    /**
+     * 通过id获取员工信息
+     * @param id
+     * @return
+     */
     @Override
     public Employee getById(Long id) {
         Employee employee = employeeMapper.getById(id);
@@ -126,8 +132,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     public void update(EmployeeDTO employeeDTO) {
 
         Employee employee = Employee.builder()
-                .updateTime(LocalDateTime.now())
-                .updateUser(BaseContext.getCurrentId())
                 .build();
         //先将dto转换成entity
         BeanUtils.copyProperties(employeeDTO,employee);
