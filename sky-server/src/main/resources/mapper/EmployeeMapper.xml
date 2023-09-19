@@ -15,7 +15,7 @@
                 <if test="idNumber != null">id_Number = #{idNumber},</if>
                 <if test="updateTime != null">update_Time = #{updateTime},</if>
                 <if test="updateUser != null">update_User = #{updateUser},</if>
-                <if test="status != null">status = #{status},</if>
+                <if test="status != null">status = #{status}</if>
 
             </set>
             where id = #{id}
