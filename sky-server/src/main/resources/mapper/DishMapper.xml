@@ -49,4 +49,13 @@
             </if>
         </where>
     </select>
+    <select id="getByCategoryIdWithDish" resultType="com.sky.entity.Dish">
+        select * from dish
+        <where>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+        </where>
+        ORDER BY status DESC,price ASC
+    </select>
 </mapper>
