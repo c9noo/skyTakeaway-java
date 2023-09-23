@@ -76,8 +76,11 @@ public class CategoryServiceImpl implements CategoryService {
      */
     @Override
     public List<Category> list(Integer type) {
-
-        return categoryMapper.list(type);
+        Category category = Category.builder()
+                .status(StatusConstant.ENABLE)
+                .type(type)
+                .build();
+        return categoryMapper.list(category);
     }
 
     /**

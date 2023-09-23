@@ -10,6 +10,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -77,6 +78,7 @@ public class CategoryController {
      */
     @PostMapping("/status/{status}")
     @ApiOperation("修改状态")
+    @CacheEvict(cacheNames = "category",allEntries = true)
     public Result startOnStop(@PathVariable Integer status,Long id){
         log.info("需要修改状态的id是{}",id);
         categoryService.statusOnStop(status,id);
@@ -90,6 +92,7 @@ public class CategoryController {
      */
     @PutMapping
     @ApiOperation("修改分类")
+    @CacheEvict(cacheNames = "category",allEntries = true)
     public Result update(@RequestBody CategoryDTO categoryDTO){
         log.info("需要修改分类的信息{}",categoryDTO);
         categoryService.update(categoryDTO);
@@ -97,7 +100,7 @@ public class CategoryController {
     }
 
     /**
-     * 修改分类
+     * 删除分类
      * @param id
      * @return
      */

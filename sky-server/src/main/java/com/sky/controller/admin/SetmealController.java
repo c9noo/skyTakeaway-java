@@ -10,6 +10,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -76,6 +77,7 @@ public class SetmealController {
      */
     @PutMapping
     @ApiOperation("修改套餐")
+    @CacheEvict(cacheNames = "setmeal",allEntries = true)
     public Result alterSetmeal(@RequestBody SetmealDTO setmealDTO){
         setmealService.update(setmealDTO);
         return Result.success();
@@ -89,6 +91,7 @@ public class SetmealController {
      */
     @PostMapping("/status/{status}")
     @ApiOperation("套餐状态修改")
+    @CacheEvict(cacheNames = "setmeal",allEntries = true)
     public Result startOnStop(@PathVariable Integer status,Long id){
         log.info("需要修改的id是{},状态是{}",id,status);
         setmealService.startOnStop(status,id);

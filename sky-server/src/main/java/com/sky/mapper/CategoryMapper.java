@@ -32,7 +32,7 @@ public interface CategoryMapper {
     Page<Category> pageQuery(CategoryPageQueryDTO categoryPageQueryDTO);
 
 
-    List<Category> list(Integer type);
+    List<Category> list(Category category);
 
     @AutoFill(value = OperationType.UPDATE)
     void update(Category category);
