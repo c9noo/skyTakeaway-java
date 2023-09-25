@@ -64,23 +64,16 @@ public class OrderController {
         return Result.success(orderPaymentVO);
     }
 
+
     /**
      * 历史订单查询
-     * @param page
-     * @param pageSize
-     * @param status
+     * @param ordersPageQueryDTO
      * @return
      */
     @GetMapping("/historyOrders")
     @ApiOperation("历史订单查询")
-    public Result<PageResult> page(Integer page,Integer pageSize,Integer status){
-        log.info("当前第{}页，每页记录数{}，当前订单状态{}",page,pageSize,status);
-
-        //封装到DTO中 转入到service
-        OrdersPageQueryDTO ordersPageQueryDTO = new OrdersPageQueryDTO();
-        ordersPageQueryDTO.setPage(page);
-        ordersPageQueryDTO.setPageSize(pageSize);
-        ordersPageQueryDTO.setStatus(status);
+    public Result<PageResult> page(OrdersPageQueryDTO ordersPageQueryDTO){
+        log.info("当前分页查询{}",ordersPageQueryDTO);
         ordersPageQueryDTO.setUserId(BaseContext.getCurrentId());
         PageResult pageResult = orderService.pageQuery(ordersPageQueryDTO);
         return Result.success(pageResult);
