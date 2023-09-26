@@ -1,5 +1,6 @@
 package com.sky.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -14,6 +15,7 @@ import com.sky.exception.ShoppingCartBusinessException;
 import com.sky.mapper.*;
 import com.sky.result.PageResult;
 import com.sky.service.OrderService;
+import com.sky.utils.HttpClientUtil;
 import com.sky.utils.WeChatPayUtil;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
@@ -22,6 +24,7 @@ import com.sky.vo.OrderVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +32,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -55,7 +60,19 @@ public class OrderServiceImpl implements OrderService {
     private UserMapper userMapper;
     @Autowired
     private WeChatPayUtil weChatPayUtil;
+    @Value("${sky.shop.address}")
+    private String shopAddress;
+    @Value("${sky.baidu.ak}")
+    private String baiduAk;
 
+    public static String url = "https://api.map.baidu.com/geocoding/v3/?";
+    public static String drivingUrl = "https://api.map.baidu.com/directionlite/v1/driving?";
+
+    /**
+     * 用户下单
+     * @param ordersSubmitDTO
+     * @return
+     */
     @Override
     @Transactional
     public OrderSubmitVO submitOrder(OrdersSubmitDTO ordersSubmitDTO) {
@@ -63,6 +80,11 @@ public class OrderServiceImpl implements OrderService {
         AddressBook addressBook = addressBookMapper.getById(ordersSubmitDTO.getAddressBookId());
         if(addressBook == null){
             throw new AddressBookBusinessException(MessageConstant.ADDRESS_BOOK_IS_NULL);
+        }
+
+        Integer integer = exceededOrNot(addressBook.getProvinceName() + addressBook.getCityName() + addressBook.getDistrictName() + addressBook.getDetail());
+        if (integer > 5000){
+            throw new OrderBusinessException("超出配送范围");
         }
         //判断一下 购物车是否为空
         ShoppingCart shoppingCart = ShoppingCart.builder()
@@ -274,6 +296,12 @@ public class OrderServiceImpl implements OrderService {
         shoppingCartMapper.insertBatch(shoppingCartList);
     }
 
+
+    /**
+     * 分页查询
+     * @param ordersPageQueryDTO
+     * @return
+     */
     @Override
     public PageResult conditionSearch(OrdersPageQueryDTO ordersPageQueryDTO) {
         PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
@@ -285,6 +313,7 @@ public class OrderServiceImpl implements OrderService {
 
         return new PageResult(page.getTotal(), orderVOList);
     }
+
 
     private List<OrderVO> getOrderVOList(Page<Orders> page) {
         // 需要返回订单菜品信息，自定义OrderVO响应结果
@@ -462,5 +491,45 @@ public class OrderServiceImpl implements OrderService {
         orderMapper.update(orders);
     }
 
+
+    /**
+     * 判断是否超出距离
+     */
+    public Integer exceededOrNot(String userAddress) {
+        //两者进行计算，可以使用百度地图的骑行路线规划 进行计算
+        Map map = new HashMap<>();
+        map.put("ak",baiduAk);
+        map.put("origin",Geocoding(shopAddress));
+        map.put("destination",Geocoding(userAddress));
+        map.put("steps_info","0");
+        String s = HttpClientUtil.doGet(drivingUrl, map);
+        JSONObject jsonObject = JSONObject.parseObject(s);
+        if (!jsonObject.getString("status").equals("0")){
+            throw new OrderBusinessException("配送路线规划失败");
+        }
+        //先获取到返回的结果集
+        return (Integer)jsonObject.getJSONObject("result").getJSONArray("routes").getJSONObject(0).get("distance");
+
+
+
+    }
+
+    public String Geocoding(String address){
+        Map map = new HashMap<>();
+        map.put("address",address);
+        map.put("ak",baiduAk);
+        map.put("output","json");
+        //调用百度的地理编码坐标 进行转换为经纬度
+        String s = HttpClientUtil.doGet(url, map);
+        JSONObject jsonObject = JSONObject.parseObject(s);
+        //status	int	本次API访问状态，如果成功返回0，如果失败返回其他数字。
+        if (!jsonObject.getString("status").equals("0")){
+            throw new OrderBusinessException("地址解析失败");
+        }
+        JSONObject location = jsonObject.getJSONObject("result").getJSONObject("location");
+        Float lng = location.getFloat("lng");
+        Float lat = location.getFloat("lat");
+        return lat + "," + lng;
+    }
 
 }
