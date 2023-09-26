@@ -16,3 +16,19 @@ sky:
     port: 6379
     password: 123456
     database: 0
+  wechat:
+    appid:
+    secret:
+    mchid:
+    mch-serial-no:
+    private-key-file-path:
+    api-v3-key:
+    we-chat-pay-cert-file-path:
+    notify-url:
+    refund-notify-url:
+
+  shop:
+    address:
+
+  baidu:
+    ak:

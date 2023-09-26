@@ -2,6 +2,7 @@ package com.sky.controller.admin;
 
 import com.sky.result.Result;
 import com.sky.service.ReportService;
+import com.sky.service.WorkspaceService;
 import com.sky.vo.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
 
 /**
@@ -29,6 +31,8 @@ public class ReportController {
 
     @Autowired
     private ReportService reportService;
+
+
 
 
     /**
@@ -88,6 +92,12 @@ public class ReportController {
     ){
         log.info("订单要统计的时间范围为{}{}",begin,end);
         return Result.success(reportService.getTopStatistics(begin,end));
+    }
+
+    @GetMapping("/export")
+    @ApiOperation("导出运营数据报表")
+    public void export(HttpServletResponse httpServletResponse){
+        reportService.export(httpServletResponse);
     }
 
 }
