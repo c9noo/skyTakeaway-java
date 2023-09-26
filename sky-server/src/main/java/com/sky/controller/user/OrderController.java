@@ -106,11 +106,23 @@ public class OrderController {
         return Result.success();
     }
 
+    /**
+     * 再来一单
+     * @param id
+     * @return
+     */
     @PostMapping("/repetition/{id}")
     @ApiOperation("再来一单")
     public Result reorder(@PathVariable Long id){
         log.info("需要再来一单的id为{}:",id);
         orderService.reorder(id);
+        return Result.success();
+    }
+
+    @GetMapping("/reminder/{id}")
+    public Result reminder(@PathVariable Long id){
+        log.info("要催单的订单编号{}",id);
+        orderService.reminder(id);
         return Result.success();
     }
 
