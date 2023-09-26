@@ -75,7 +75,7 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     @Transactional
-    public OrderSubmitVO submitOrder(OrdersSubmitDTO ordersSubmitDTO) {
+    public OrderSubmitVO submitOrder(OrdersSubmitDTO ordersSubmitDTO) throws OrderBusinessException {
         //判断一下 地址是否为空
         AddressBook addressBook = addressBookMapper.getById(ordersSubmitDTO.getAddressBookId());
         if(addressBook == null){
@@ -296,7 +296,6 @@ public class OrderServiceImpl implements OrderService {
         shoppingCartMapper.insertBatch(shoppingCartList);
     }
 
-
     /**
      * 分页查询
      * @param ordersPageQueryDTO
@@ -313,7 +312,6 @@ public class OrderServiceImpl implements OrderService {
 
         return new PageResult(page.getTotal(), orderVOList);
     }
-
 
     private List<OrderVO> getOrderVOList(Page<Orders> page) {
         // 需要返回订单菜品信息，自定义OrderVO响应结果

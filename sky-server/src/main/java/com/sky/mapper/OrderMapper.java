@@ -6,6 +6,9 @@ import com.sky.entity.Orders;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 /**
  * @program: sky-take-out
  * @ClassName OrderMapper
@@ -51,4 +54,13 @@ public interface OrderMapper {
 
     @Select("select count(id) from orders where status = #{status}")
     Integer countStatus(Integer status);
+
+    /**
+     * 查询超出支付时间的订单
+     * @param status
+     * @param plusMinutes
+     * @return
+     */
+    @Select("select * from orders where status = #{status} and order_time < #{plusMinutes}")
+    List<Orders> getByStatusAndOrderTimeLT(Integer status, LocalDateTime plusMinutes);
 }
