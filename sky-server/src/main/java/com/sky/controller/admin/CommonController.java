@@ -17,7 +17,7 @@ import java.util.UUID;
 
 /**
  * @program: sky-take-out
- * @ClassName commonController
+ * @ClassName CommonController
  * @author: c9noo
  * @create: 2023-09-19 09:28
  * @Version 1.0
@@ -27,7 +27,7 @@ import java.util.UUID;
 @RequestMapping("/admin/common")
 @Slf4j
 @Api(tags = "通用接口")
-public class commonController {
+public class CommonController {
 
     @Autowired
     private AliOssUtil aliOssUtil;

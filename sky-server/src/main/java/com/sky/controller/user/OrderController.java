@@ -120,6 +120,7 @@ public class OrderController {
     }
 
     @GetMapping("/reminder/{id}")
+    @ApiOperation("用户催单")
     public Result reminder(@PathVariable Long id){
         log.info("要催单的订单编号{}",id);
         orderService.reminder(id);
