@@ -32,12 +32,7 @@ public interface DishMapper {
     @Select("select count(id) from dish where category_id = #{categoryId}")
     Integer countByCategoryId(Long categoryId);
 
-    /**
-     * 新增菜品
-     * @param dish
-     */
-    @AutoFill(value = OperationType.INSERT)
-    void insert(Dish dish);
+
 
     /**
      * 菜品分页查询
@@ -66,6 +61,13 @@ public interface DishMapper {
      */
     @AutoFill(OperationType.UPDATE)
     void update(Dish dish);
+
+    /**
+     * 新增菜品
+     * @param dish
+     */
+    @AutoFill(value = OperationType.INSERT)
+    void insert(Dish dish);
 
     List<Dish> getByCategoryIdWithDish(Long categoryId);
     /**
